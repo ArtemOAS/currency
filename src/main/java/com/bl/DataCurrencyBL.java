@@ -7,6 +7,11 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 @Component
 public class DataCurrencyBL {
     @Autowired
@@ -25,10 +30,16 @@ public class DataCurrencyBL {
         requestHeaders.add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
 
 
-        ResponseEntity<String> rest = restTemplate.exchange("http://www.sberbank.ru/common/js/get_quote_values.php?version=1&inf_block=123&_number_amount114=10000&qid[]=3&qid[]=2&cbrf=0&period=on&_date_afrom114=24.06.2015&_date_ato114=24.06.2015&mode=full&display=json",
+        ResponseEntity<String> rest = restTemplate.exchange(String.format("http://www.sberbank.ru/common/js/get_quote_values.php?version=1&inf_block=123&_number_amount114=10000&qid[]=3&qid[]=2&cbrf=0&period=on&_date_afrom114=%s&_date_ato114=%s&mode=full&display=json", getDateFormat("dd.MM.yyyy"), getDateFormat("dd.MM.yyyy")),
                 HttpMethod.GET, new HttpEntity<Object>(requestHeaders, null), String.class);
 
-        return new Gson().fromJson(rest.getBody(), Responce.class);
+        return new Gson().fromJson(rest.getBody().replaceAll(String.format("%s 00:00:00", getDateFormat("yyyy-MM-dd")), "date"), Responce.class);
+    }
+
+    private String getDateFormat(String format){
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 }

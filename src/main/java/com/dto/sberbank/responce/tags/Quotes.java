@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class Quotes implements Serializable
 {
-    @SerializedName("2015-06-24 00:00:00")
+    @SerializedName("date")
     private DateName dateName;
 
     public DateName getDateName() {
